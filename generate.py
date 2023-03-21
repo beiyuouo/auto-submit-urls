@@ -4,31 +4,33 @@ import urllib
 import urllib.request
 import random
 
-site = 'https://blog.bj-yan.top'
-sitemaps = ['/sitemap.xml']
+site = "https://blog.bj-yan.top"
+sitemaps = ["/sitemap.xml"]
 
 result = []
 bingData = {}
-i=0
+i = 0
 
-headers = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}  
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0"
+}
 
 for sitemap in sitemaps:
-    sitemap = site+sitemap
+    sitemap = site + sitemap
     req = urllib.request.Request(url=sitemap, headers=headers)
-    html = urllib.request.urlopen(req).read().decode('utf-8')
-    data = re.findall(re.compile(r'(?<=<loc>).*?(?=</loc>)'), html)
-    result=result+data
+    html = urllib.request.urlopen(req).read().decode("utf-8")
+    data = re.findall(re.compile(r"(?<=<loc>).*?(?=</loc>)"), html)
+    result = result + data
 
 
 del result[0]
 
 
-bingUrllist=[]
-googleUrllist=[]
+bingUrllist = []
+googleUrllist = []
 
 for data in result:
-    i=i+1
+    i = i + 1
     result.remove(data)
     # bing 提交前5条
     if i <= 5:
@@ -39,11 +41,11 @@ for data in result:
         break
 
 # bing 提交随机5条
-bingUrllist= bingUrllist + random.sample(result,5)
+bingUrllist = bingUrllist + random.sample(result, min(len(result), 5))
 # baidu google 提交随机50条
-googleUrllist=googleUrllist + random.sample(result,50)
+googleUrllist = googleUrllist + random.sample(result, min(len(result), 50))
 
-with open('urls.txt', 'w') as file:
+with open("urls.txt", "w") as file:
     for data in googleUrllist:
         print(data, file=file)
 
@@ -51,7 +53,7 @@ with open('urls.txt', 'w') as file:
 bingData["siteUrl"] = site
 bingData["urlList"] = bingUrllist
 with open("bing.json", "w") as f:
-    json.dump(bingData,f)
+    json.dump(bingData, f)
 
 # with open('all-urls.txt', 'w') as file:
 #     for data in result:
